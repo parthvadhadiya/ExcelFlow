@@ -1,0 +1,23 @@
+[project]
+name = "excel-agent"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "parthvadhadiya",email = "parthvadhadiya424@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit (>=1.46.1,<2.0.0)",
+    "autogen-agentchat (>=0.6.2,<0.7.0)",
+    "autogen-core (>=0.6.2,<0.7.0)",
+    "autogen-ext[openai] (>=0.6.2,<0.7.0)",
+    "pandas (>=2.3.1,<3.0.0)",
+    "openpyxl (>=3.1.5,<4.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
