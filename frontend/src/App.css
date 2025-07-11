@@ -1,0 +1,34 @@
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  display: flex;
+  height: 100%;
+}
+
+.excel-container {
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.chat-sidebar {
+  width: 350px;
+  height: 100%;
+  border-left: 1px solid #374151;
+  background-color: #1f2937;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.2rem;
+  color: #9ca3af;
+}

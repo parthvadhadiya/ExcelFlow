@@ -1,7 +1,33 @@
+# Python
 .env
 __pycache__
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
+.Python
 .venv
-data.xlsx
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.pnp/
+.pnp.js
+coverage/
+.next/
+out/
+build/
+dist/
+.DS_Store
+
+# Project specific
+backend/uploads/
+*.xlsx
+!data.xlsx
