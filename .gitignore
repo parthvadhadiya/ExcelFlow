@@ -3,4 +3,5 @@ __pycache__
 *.pyc
 *.pyo
 *.pyd
-.venvdata.xlsx
+.venv
+data.xlsx
