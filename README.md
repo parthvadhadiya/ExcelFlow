@@ -90,7 +90,9 @@ The application is split into two main components:
 4. **Run the backend server:**
 
    ```bash
-   uvicorn app.main:app --reload
+   uvicorn app.main:app --reload 
+   OR 
+   python -m uvicorn app.main:app --reload --port 8000
    ```
 
 ### Frontend Setup

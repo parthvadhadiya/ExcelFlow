@@ -63,16 +63,26 @@ async def root():
 
 @app.post("/upload")
 async def upload_excel(file: UploadFile = File(...)):
-    """Upload an Excel file and return a client ID for WebSocket connection"""
+    """Upload a spreadsheet file and return a client ID for WebSocket connection"""
     print(f"Received file upload: {file.filename}")
     
     try:
+        # Check file extension
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        supported_formats = ['.xlsx', '.xls', '.csv', '.tsv', '.ods', '.fods', '.xlsm', '.xltx', '.xltm']
+        
+        if file_extension not in supported_formats:
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"Unsupported file format. Supported formats: {', '.join(supported_formats)}"}
+            )
+        
         # Generate a unique client ID
         client_id = str(uuid.uuid4())
         print(f"Generated client ID: {client_id}")
         
-        # Save the uploaded file
-        file_path = os.path.join(UPLOAD_DIR, f"{client_id}.xlsx")
+        # Save the uploaded file with original extension
+        file_path = os.path.join(UPLOAD_DIR, f"{client_id}{file_extension}")
         print(f"Saving file to: {file_path}")
         
         with open(file_path, "wb") as buffer:
@@ -95,16 +105,17 @@ async def upload_excel(file: UploadFile = File(...)):
         data_range = f"A1:{get_column_letter(num_cols)}{num_rows}"
 
         
-        system_message = f"""You are a smart Excel assistant. You have access to functions. Always use them when asked to read/update Excel content.
+        system_message = f"""You are a smart spreadsheet assistant. You have access to functions. Always use them when asked to read/update spreadsheet content.
         After inserting a row or column, always re-evaluate the sheet before updating it.
         Make sure the inserted index exists before trying to write to it.
         When inserting a total row, always find the last filled row index using tools. Never hardcode the index.
 
         
-        Here's a preview of top 5 rows of the Excel data structure it might contains header if not you can figure it out based on data: 
+        Here's a preview of top 5 rows of the spreadsheet data structure it might contains header if not you can figure it out based on data: 
         {df_head_str}
 
-        The Excel file contains data in the range {data_range} ({num_rows} rows × {num_cols} columns)."""
+        The spreadsheet contains data in the range {data_range} ({num_rows} rows × {num_cols} columns).
+        File format: {file_extension[1:].upper()}"""
         active_connections[client_id] = {
             "file_path": file_path,
             "excel_utils": excel_utils,
@@ -137,8 +148,16 @@ async def get_excel_data(client_id: str):
             # Handle non-serializable types
             if pd.isna(cell_value):
                 cell_value = None
-            elif isinstance(cell_value, pd.Timestamp):
+            elif isinstance(cell_value, pd.Timestamp) or hasattr(cell_value, 'isoformat'):
                 cell_value = cell_value.isoformat()
+            # Handle NumPy types by converting to Python native types
+            elif hasattr(cell_value, 'item'):
+                try:
+                    cell_value = cell_value.item()
+                except (ValueError, TypeError):
+                    cell_value = str(cell_value)
+            elif not isinstance(cell_value, (str, int, float, bool, type(None))):
+                cell_value = str(cell_value)
             row[str(j)] = cell_value
         data.append(row)
     

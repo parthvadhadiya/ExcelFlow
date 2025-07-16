@@ -5,13 +5,40 @@ const FileUpload = ({ onFileUpload, loading, error }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
+  // Define supported file types
+  const supportedFormats = {
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+    'application/vnd.ms-excel': '.xls',
+    'application/vnd.oasis.opendocument.spreadsheet': '.ods',
+    'text/csv': '.csv',
+    'text/tab-separated-values': '.tsv',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.template': '.xltx',
+    'application/vnd.ms-excel.template.macroEnabled.12': '.xltm',
+    'application/vnd.ms-excel.sheet.macroEnabled.12': '.xlsm'
+  };
+
+  // Get file extensions for accept attribute
+  const acceptedExtensions = Object.values(supportedFormats).join(',');
+  
+  // Check if file type is supported
+  const isFileSupported = (file) => {
+    // Check by MIME type
+    if (supportedFormats[file.type]) {
+      return true;
+    }
+    
+    // Fallback to extension check if MIME type is not recognized
+    const extension = file.name.toLowerCase().split('.').pop();
+    return ['xlsx', 'xls', 'csv', 'tsv', 'ods', 'fods', 'xlsm', 'xltx', 'xltm'].includes(extension);
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+    if (file && isFileSupported(file)) {
       setSelectedFile(file);
     } else {
       setSelectedFile(null);
-      alert('Please select a valid Excel file (.xlsx)');
+      alert(`Please select a valid spreadsheet file (${acceptedExtensions})`);
     }
   };
 
@@ -22,10 +49,10 @@ const FileUpload = ({ onFileUpload, loading, error }) => {
   const handleDrop = (event) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
-    if (file && file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+    if (file && isFileSupported(file)) {
       setSelectedFile(file);
     } else {
-      alert('Please drop a valid Excel file (.xlsx)');
+      alert(`Please drop a valid spreadsheet file (${acceptedExtensions})`);
     }
   };
 
@@ -45,13 +72,16 @@ const FileUpload = ({ onFileUpload, loading, error }) => {
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
-        accept=".xlsx"
+        accept={acceptedExtensions}
         id="file-input"
       />
       <label htmlFor="file-input">
         <FiUpload />
-        <h2>Upload Excel File</h2>
-        <p>Drag & drop your Excel file here or click to browse</p>
+        <h2>Upload Spreadsheet</h2>
+        <p>Drag & drop your spreadsheet file here or click to browse</p>
+        <p className="supported-formats">
+          Supported formats: XLSX, XLS, CSV, TSV, ODS and more
+        </p>
         {selectedFile && (
           <p className="selected-file">Selected: {selectedFile.name}</p>
         )}
