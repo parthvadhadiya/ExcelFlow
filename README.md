@@ -141,7 +141,11 @@ The application is split into two main components:
 
 ## 📊 Demo
 
-Coming Soon!
+### Video Demonstrations
+
+Check out these video demonstrations of ExcelFlow in action:
+
+![ExcelFlow Demo](docs/videos/demo1.gif)
 
 ## 🔧 Advanced Configuration
 
